@@ -12,7 +12,7 @@ const { connectDB } = require('./config/dbconfig.js');
 connectDB();
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 80;
 
 const frontendDistPath = path.join(__dirname, 'auto_apply', 'browser');
 
