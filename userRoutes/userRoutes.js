@@ -105,10 +105,15 @@ router.post('/auth/register', async (req, res) => {
     return res.status(400).json({ message: 'password must be at least 6 characters' });
   }
 
-  const existing = await User.findOne({ username: uname }).lean();
-  if (existing) {
-    return res.status(409).json({ message: 'User already exists' });
+  // Ensure uniqueness for email only (as requested).
+  // Username uniqueness check intentionally omitted.
+
+
+  const existingEmail = await User.findOne({ email }).lean();
+  if (existingEmail) {
+    return res.status(409).json({ message: 'Email already exists' });
   }
+
 
   const passwordHash = await bcrypt.hash(password, 10);
   await User.create({ username: uname, email, passwordHash });
