@@ -8,9 +8,6 @@ const paymentRoutes = require('./routes/payment.js');
 const { connectDB } = require('./config/dbconfig.js');
 const windowsAppRoutes = require('./winAppRoutes/windowsAppRoutes.js');
 
-
-
-
 connectDB();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -19,29 +16,15 @@ const port = process.env.PORT || 5000;
 
 
 
-
-
 // SERVER CODE
-app.use(cors({
-  origin: true,
-  credentials: true,
-}));
+app.use(cors({origin: true, credentials: true,}));
 app.use(express.json());
 
-app.use(
-  '/uploads',
-  express.static(path.join(__dirname, 'uploads'))
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))
 );
 
 
-// Serve Angular
-const frontendDistPath = path.join(__dirname, 'speedtap', 'browser');
 
-app.use(express.static(frontendDistPath));
-
-app.use((req, res) => {
-    res.sendFile(path.join(frontendDistPath, 'index.html'));
-});
 
 
 // Mount modular API routes
@@ -85,12 +68,14 @@ app.use('/api/windows', require('./winAppRoutes/windowsAppRoutes.js'));
 
 
 
-
-
+// Serve Angular
+const frontendDistPath = path.join(__dirname, 'speedtap', 'browser');
+app.use(express.static(frontendDistPath));
+app.use((req, res) => {
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+});
 
 app.listen(port, () => {
   console.log(`app listening on http://localhost:${port}`);
 });
-
-
 
