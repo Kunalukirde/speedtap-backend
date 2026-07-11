@@ -1,17 +1,18 @@
-// User routes (auth demo)
-// This module is mounted at: app.use('/api', UserApiRoutes)
-
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-
 const router = express.Router();
+const UserQuestionBankController = require('../userController/QuestionBankController.js');
+const authMiddleware = require('../middleware/authMiddleware.js')
+const UserJobPortalsController = require('../userController/UserJobPortalsController.js');
+const UserResumeController = require('../userController/UserResumeController.js');
+const UserProfileControlller = require('../userController/UserProfileControlller.js');
+const UserChangePassword = require('../userController/UserChangePassword.js');
 
 // Access shared in-memory stores from the parent module via require cache.
 // We'll fall back to module-local stores if not present.
 const state = (() => {
-  try {
-    // eslint-disable-next-line global-require
+  try { // eslint-disable-next-line global-require
     return require('../state');
   } catch {
     return null;
@@ -39,11 +40,12 @@ const User = require('../models/User');
 
 
 
-function signAccessToken({ username, email }) {
+
+function signAccessToken({ username, email, userId }) {
   const jti = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
   const token = jwt.sign(
-    { sub: username, email },
+    { sub: username, email, userId },
     JWT_SECRET,
     {
       algorithm: 'HS256',
@@ -56,39 +58,15 @@ function signAccessToken({ username, email }) {
   return { token, jti };
 }
 
-function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Missing Authorization header' });
-  }
 
-  const token = authHeader.slice('Bearer '.length);
 
-  try {
-    const payload = jwt.verify(token, JWT_SECRET, {
-      algorithms: ['HS256'],
-      issuer: JWT_ISSUER,
-    });
-
-    if (payload?.jti && blacklistedJtis.has(payload.jti)) {
-      return res.status(401).json({ message: 'Token has been logged out' });
-    }
-
-    req.user = {
-      username: payload.sub,
-      email: payload.email,
-      jti: payload.jti,
-    };
-
-    return next();
-  } catch {
-    return res.status(401).json({ message: 'Invalid or expired token' });
-  }
-}
 
 router.get('/live', (req, res) => {
     return res.json({ message: 'Server is live' });
 }); 
+
+
+
 
 router.post('/auth/register', async (req, res) => {
   await ensureDB();
@@ -139,7 +117,11 @@ router.post('/auth/login', async (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
-  const { token } = signAccessToken({ username: user.username, email: user.email });
+  const { token } = signAccessToken({
+    username: user.username,
+    email: user.email,
+    userId: user._id,
+  });
   return res.json({ token });
 });
 
@@ -159,6 +141,20 @@ router.get('/auth/me', authMiddleware, (req, res) => {
     },
   });
 });
+
+router.use('/user-question-bank', authMiddleware, UserQuestionBankController);
+
+
+router.use('/user-job-portals', authMiddleware, UserJobPortalsController);
+
+// upload resume controller 
+router.use('/resume', authMiddleware, UserResumeController);
+
+// user profile 
+router.use('/profile', authMiddleware, UserProfileControlller);
+
+// change-password
+router.use('/change-password',authMiddleware, UserChangePassword);
 
 module.exports = router;
 
