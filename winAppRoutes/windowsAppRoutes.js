@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const UserQuestionBank = require('../models/UserQuestionBank');
-const NJobListingUrl = require('../models/NaukriJobListing');
+const UserQuestionBank = require('../models/userQuestionBank');
+const NJobListingUrl = require('../models/naukriJobListing');
 const { decrypt } = require("../utils/crypto");
 
 
