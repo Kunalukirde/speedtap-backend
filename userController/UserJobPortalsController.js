@@ -3,7 +3,7 @@ const router = express.Router();
 const { encrypt } = require("../utils/crypto");
 
 const JobPortal = require('../models/jobPortals');
-const User = require('../models/User');
+const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const { decrypt } = require("../utils/crypto");
 

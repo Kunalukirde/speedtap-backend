@@ -3,7 +3,7 @@ const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware"); // adjust path if needed
 
-const User = require("../models/User");
+const User = require("../models/user");
 const Subscription = require("../models/subscription");
 
 router.post("/start-trial", authMiddleware, async (req, res) => {

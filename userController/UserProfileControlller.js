@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Profile = require("../models/UserProfile");
+const Profile = require("../models/userProfile");
 const calculateProfileCompletion = require("../utils/profileCompletion.js");
 
 router.post('/', async (req, res) => {

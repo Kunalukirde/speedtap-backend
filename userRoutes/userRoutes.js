@@ -2,13 +2,13 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const router = express.Router();
-const UserQuestionBankController = require('../userController/QuestionBankController.js');
+const UserQuestionBankController = require('../userController/questionBankController.js');
 const authMiddleware = require('../middleware/authMiddleware.js')
-const UserJobPortalsController = require('../userController/UserJobPortalsController.js');
-const UserResumeController = require('../userController/UserResumeController.js');
-const UserProfileControlller = require('../userController/UserProfileControlller.js');
-const UserChangePassword = require('../userController/UserChangePassword.js');
-const Otp = require('../models/Otp.js');
+const UserJobPortalsController = require('../userController/userJobPortalsController.js');
+const UserResumeController = require('../userController/userResumeController.js');
+const UserProfileControlller = require('../userController/userProfileControlller.js');
+const UserChangePassword = require('../userController/userChangePassword.js');
+const Otp = require('../models/otp.js');
 const { sendOtpEmail } = require("../services/emailService.js");
 
 // Access shared in-memory stores from the parent module via require cache.
