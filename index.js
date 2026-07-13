@@ -7,6 +7,7 @@ const UserApiRoutes = require('./userRoutes/userRoutes.js');
 const paymentRoutes = require('./routes/payment.js');
 const { connectDB } = require('./config/dbconfig.js');
 const windowsAppRoutes = require('./winAppRoutes/windowsAppRoutes.js');
+const subscriptionRoutes = require('./routes/subscriptionRoutes.js');
 
 connectDB();
 const app = express();
@@ -33,6 +34,7 @@ app.get('/health', (req, res) => {
 })
 app.use('/api', UserApiRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/subscription', subscriptionRoutes);
 
 
 

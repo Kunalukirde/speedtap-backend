@@ -1,32 +1,55 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const subscriptionSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true
-  },
+const subscriptionSchema = new mongoose.Schema(
+{
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
 
-  planName: String,
+    planName: {
+        type: String,
+        enum: ["TRIAL", "PROFESSIONAL", "PREMIUM"],
+        required: true
+    },
 
-  amount: Number,
+    amount: {
+        type: Number,
+        default: 0
+    },
 
-  paymentId: String,
+    paymentMethod: {
+        type: String,
+        enum: ["TRIAL", "RAZORPAY"],
+        required: true
+    },
 
-  orderId: String,
+    paymentId: String,
 
-  startDate: Date,
+    orderId: String,
 
-  expiryDate: Date,
+    razorpaySignature: String,
 
-  status: {
-    type: String,
-    default: 'ACTIVE'
-  }
+    startDate: {
+        type: Date,
+        required: true
+    },
 
-}, { timestamps: true });
+    expiryDate: {
+        type: Date,
+        required: true
+    },
 
-module.exports =
-  mongoose.model(
-    'Subscription',
-    subscriptionSchema
-  );
+    status: {
+        type: String,
+        enum: ["ACTIVE", "EXPIRED", "CANCELLED"],
+        default: "ACTIVE"
+    }
+
+},
+{
+    timestamps: true
+});
+
+module.exports = mongoose.model("Subscription", subscriptionSchema);

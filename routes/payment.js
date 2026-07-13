@@ -42,8 +42,7 @@ async (req, res) => {
 const crypto =
 require('crypto');
 
-router.post(
-'/verify-payment',
+router.post('/verify-payment',
 async (req,res)=>{
 
  const {
@@ -92,5 +91,14 @@ async (req,res)=>{
  // Activate Plan
 
 });
+
+
+
+
+
+
+
+
+
 
 module.exports = router;
