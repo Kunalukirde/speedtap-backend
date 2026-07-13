@@ -62,6 +62,11 @@ UserQuestionBankSchema.index(
   { unique: true, sparse: true }
 );
 
-module.exports = mongoose.models.UserQuestionBank || mongoose.model('UserQuestionBank', UserQuestionBankSchema);
+module.exports =
+  mongoose.models.UserQuestionBank ||
+  mongoose.model('UserQuestionBank', UserQuestionBankSchema);
+
+
+
 
 

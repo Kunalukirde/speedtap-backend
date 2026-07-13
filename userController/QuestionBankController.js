@@ -1,6 +1,6 @@
 const express = require('express');
 
-const UserQuestionBank = require('../models/UserQuestionBank.js');
+const UserQuestionBankModel = require('../models/UserQuestionBank');
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const docs = await UserQuestionBank.find({ userId })
+    const docs = await UserQuestionBankModel.find({ userId })
       .sort({ createdAt: -1 })
       .lean();
 
@@ -50,7 +50,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'answerText is required' });
     }
 
-    const doc = await UserQuestionBank.findOneAndUpdate(
+    const doc = await UserQuestionBankModel.findOneAndUpdate(
       { userId: tokenUserId, question, platform, mode },
       { $set: { date, answerText } },
       { new: true, upsert: true, setDefaultsOnInsert: true }
@@ -82,7 +82,7 @@ router.post('/', async (req, res) => {
 //     } = req.body || {};
 
 //     // Get existing document
-//     const existingDoc = await UserQuestionBank.findOne({
+//     const existingDoc = await UserQuestionBankModel.findOne({
 //       _id: id,
 //       userId: tokenUserId
 //     });
@@ -110,7 +110,7 @@ router.post('/', async (req, res) => {
 //         : existingDoc.mode;
 
 //     // Check duplicate except current document
-//     const duplicate = await UserQuestionBank.findOne({
+//     const duplicate = await UserQuestionBankModel.findOne({
 //       _id: { $ne: id },
 //       userId: tokenUserId,
 //       question: finalQuestion,
@@ -142,7 +142,7 @@ router.post('/', async (req, res) => {
 //     if (mode === 'exact' || mode === 'contain')
 //       update.mode = finalMode;
 
-//     const doc = await UserQuestionBank.findOneAndUpdate(
+//     const doc = await UserQuestionBankModel.findOneAndUpdate(
 //       {
 //         _id: id,
 //         userId: tokenUserId
@@ -191,7 +191,7 @@ router.patch('/:id', async (req, res) => {
       platform
     } = req.body || {};
 
-    const existingDoc = await UserQuestionBank.findOne({
+    const existingDoc = await UserQuestionBankModel.findOne({
       _id: id,
       userId: tokenUserId
     });
@@ -224,7 +224,7 @@ router.patch('/:id', async (req, res) => {
       update.mode = mode;
     }
 
-    const doc = await UserQuestionBank.findOneAndUpdate(
+    const doc = await UserQuestionBankModel.findOneAndUpdate(
       {
         _id: id,
         userId: tokenUserId
@@ -259,7 +259,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     const { id } = req.params;
-    const doc = await UserQuestionBank.findOneAndDelete({ _id: id, userId: tokenUserId });
+    const doc = await UserQuestionBankModel.findOneAndDelete({ _id: id, userId: tokenUserId });
     if (!doc) return res.status(404).json({ message: 'Not found' });
     return res.json({ message: 'Deleted', data: doc });
   } catch (err) {
