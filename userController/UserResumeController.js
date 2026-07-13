@@ -3,7 +3,7 @@ const router = express.Router();
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
-const Resume = require("../models/resume");
+const Resume = require("../models/Resume");
 
 // ================= Upload Config =================
 

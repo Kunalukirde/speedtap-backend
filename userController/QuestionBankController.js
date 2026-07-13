@@ -1,6 +1,6 @@
 const express = require('express');
 
-const UserQuestionBank = require('../models/userQuestionBank.js');
+const UserQuestionBank = require('../models/UserQuestionBank.js');
 
 const router = express.Router();
 
