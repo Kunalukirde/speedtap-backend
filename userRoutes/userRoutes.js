@@ -10,6 +10,7 @@ const UserProfileControlller = require('../userController/UserProfileControlller
 const UserChangePassword = require('../userController/UserChangePassword.js');
 const Otp = require('../models/Otp.js');
 const { sendOtpEmail } = require("../services/emailService.js");
+const Subscription = require('../models/subscription.js')
 
 // Access shared in-memory stores from the parent module via require cache.
 // We'll fall back to module-local stores if not present.

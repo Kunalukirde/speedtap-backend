@@ -3,12 +3,13 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const verifyWindowsSubscription = require('../middleware/windowsSubscription');
 const UserQuestionBank = require('../models/UserQuestionBank');
 const NJobListingUrl = require('../models/NaukriJobListing');
 const { decrypt } = require("../utils/crypto");
 
 
-router.post('/call-login-api', async (req, res) => {
+router.post('/call-login-api',  async (req, res) => {
     try {
         const { email } = req.body;
         if (!email) {
@@ -58,7 +59,7 @@ const jobListing = await NJobListingUrl.findOneAndUpdate(
 });
 
 
-router.post('/save-job-listing-url', async (req, res) => {
+router.post('/save-job-listing-url',verifyWindowsSubscription, async (req, res) => {
     try {
 
         // Get Authorization Header
@@ -124,7 +125,7 @@ router.post('/save-job-listing-url', async (req, res) => {
 
 
 
-router.post('/call-auto-apply-joblist', async (req, res) => {
+router.post('/call-auto-apply-joblist',verifyWindowsSubscription, async (req, res) => {
 
     try {
         const authHeader = req.headers.authorization;
@@ -165,7 +166,7 @@ router.post('/call-auto-apply-joblist', async (req, res) => {
 
 
 
-router.post('/call-auto-apply-answers', async (req, res) => {
+router.post('/call-auto-apply-answers',verifyWindowsSubscription, async (req, res) => {
     try {
         console.log(req.body);
 
@@ -240,7 +241,7 @@ router.post('/call-auto-apply-answers', async (req, res) => {
     }
 });
 
-router.post('/auto-apply-add-question', async (req,res) => {
+router.post('/auto-apply-add-question',verifyWindowsSubscription, async (req,res) => {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {

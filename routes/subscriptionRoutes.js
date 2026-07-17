@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const User = require("../models/User");
 
 const authMiddleware = require("../middleware/authMiddleware"); // adjust path if needed
 
-const User = require("../models/User");
 const Subscription = require("../models/subscription.js");
 
 router.post("/start-trial", authMiddleware, async (req, res) => {
@@ -102,6 +102,92 @@ router.get("/current", authMiddleware, async (req, res) => {
         });
     }
 });
+
+
+
+router.post(
+  "/request-payment",
+  authMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const { planName, amount, transactionId } = req.body;
+
+      if (!planName || !amount || !transactionId) {
+        return res.status(400).json({
+          success: false,
+          message: "All fields are required."
+        });
+      }
+
+      // Get user FIRST
+      const user = await User.findById(req.user.userId);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found"
+        });
+      }
+
+      // Check if user's subscription is already pending
+      if (user.subscription?.pendingApproval) {
+        return res.status(400).json({
+          success: false,
+          message: "Your previous payment is already under verification."
+        });
+      }
+
+      // Check if another payment request exists
+      const pending = await Subscription.findOne({
+        userId: user._id,
+        paymentStatus: "PENDING"
+      });
+
+      if (pending) {
+        return res.status(400).json({
+          success: false,
+          message: "You already have a payment pending verification."
+        });
+      }
+
+      await Subscription.create({
+        userId: user._id,
+        planName,
+        amount,
+        paymentMethod: "QR",
+        transactionId,
+        paymentStatus: "PENDING",
+        status: "PENDING"
+      });
+
+      user.subscription.plan = planName;
+      user.subscription.pendingApproval = true;
+      user.subscription.isActive = false;
+
+      await user.save();
+
+      return res.json({
+        success: true,
+        message: "Payment submitted successfully. Please wait while we verify your payment. Your subscription will start after approval."
+      });
+
+    } catch (err) {
+
+      console.log(err);
+
+      res.status(500).json({
+        success: false,
+        message: "Server Error"
+      });
+
+    }
+
+});
+
+
+
 
 
 

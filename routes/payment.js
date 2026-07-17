@@ -1,104 +1,265 @@
-const express = require('express');
-const razorpay = require('../config/razorpay');
+const express = require("express");
+const axios = require("axios");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
+// console.log("Payment Route Loaded");
 
-router.post('/create-order',
-async (req, res) => {
+router.post(
+    "/create-order",
+    authMiddleware,
+    async (req, res) => {
 
-  const { amount } = req.body;
+        try {
 
-  try {
+            const { amount, plan } = req.body;
 
-    const order =
-      await razorpay.orders.create({
+            const orderId =
+                "ORDER_" +
+                Date.now() +
+                "_" +
+                req.user.userId;
 
-        amount: amount * 100,
+            const response =
+                await axios.post(
 
-        currency: 'INR',
+                    process.env.CASHFREE_ENV === "production"
+                        ? "https://api.cashfree.com/pg/orders"
+                        : "https://sandbox.cashfree.com/pg/orders",
 
-        receipt:
-          'receipt_' +
-          Date.now()
+                    {
 
-      });
+                        order_id: orderId,
 
-    res.json(order);
+                        order_amount: amount,
 
-  } catch (err) {
+                        order_currency: "INR",
 
-    console.log(err);
+                        customer_details: {
 
-    res.status(500).json({
-      message: 'Order Creation Failed'
-    });
+                            customer_id:
+                                req.user.userId,
 
-  }
+                            customer_email:
+                                req.user.email,
 
-});
+                            customer_phone:
+                                "9999999999"
 
+                        },
 
+                        order_meta: {
 
-const crypto =
-require('crypto');
+                            return_url:
+                                "http://localhost:4200/payment-status?order_id={order_id}"
 
-router.post('/verify-payment',
-async (req,res)=>{
+                        }
 
- const {
+                    },
 
- razorpay_order_id,
+                    {
 
- razorpay_payment_id,
+                        headers: {
 
- razorpay_signature,
+                            "x-client-id":
+                                process.env.CASHFREE_CLIENT_ID,
 
- userId,
+                            "x-client-secret":
+                                process.env.CASHFREE_CLIENT_SECRET,
 
- planName,
+                            "x-api-version":
+                                "2023-08-01",
 
- amount
+                            "Content-Type":
+                                "application/json"
 
- } = req.body;
+                        }
 
- const expectedSignature =
+                    }
 
- crypto
- .createHmac(
-   'sha256',
-   process.env
-   .RAZORPAY_KEY_SECRET
- )
- .update(
-   razorpay_order_id +
-   '|' +
-   razorpay_payment_id
- )
- .digest('hex');
+                );
 
- if(
-  expectedSignature !==
-  razorpay_signature
- ){
+            res.json({
 
-  return res.status(400)
-  .json({
-    success:false
-  });
+                success: true,
 
- }
+                paymentSessionId:
+                    response.data.payment_session_id,
 
- // Activate Plan
+                orderId:
+                    response.data.order_id
 
-});
+            });
 
+        }
 
+        catch (err) {
 
+            console.log(
+                err.response?.data ||
+                err.message
+            );
 
+            res.status(500).json({
 
+                success: false,
+
+                message:
+                    "Unable to create payment."
+
+            });
+
+        }
+
+    }
+
+);
 
 
 
 
 
 module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const express = require('express');
+// const razorpay = require('../config/razorpay');
+
+// const router = express.Router();
+
+// router.post('/create-order',
+// async (req, res) => {
+
+//   const { amount } = req.body;
+
+//   try {
+
+//     const order =
+//       await razorpay.orders.create({
+
+//         amount: amount * 100,
+
+//         currency: 'INR',
+
+//         receipt:
+//           'receipt_' +
+//           Date.now()
+
+//       });
+
+//     res.json(order);
+
+//   } catch (err) {
+
+//     console.log(err);
+
+//     res.status(500).json({
+//       message: 'Order Creation Failed'
+//     });
+
+//   }
+
+// });
+
+
+
+// const crypto =
+// require('crypto');
+
+// router.post('/verify-payment',
+// async (req,res)=>{
+
+//  const {
+
+//  razorpay_order_id,
+
+//  razorpay_payment_id,
+
+//  razorpay_signature,
+
+//  userId,
+
+//  planName,
+
+//  amount
+
+//  } = req.body;
+
+//  const expectedSignature =
+
+//  crypto
+//  .createHmac(
+//    'sha256',
+//    process.env
+//    .RAZORPAY_KEY_SECRET
+//  )
+//  .update(
+//    razorpay_order_id +
+//    '|' +
+//    razorpay_payment_id
+//  )
+//  .digest('hex');
+
+//  if(
+//   expectedSignature !==
+//   razorpay_signature
+//  ){
+
+//   return res.status(400)
+//   .json({
+//     success:false
+//   });
+
+//  }
+
+//  // Activate Plan
+
+// });
+
+
+
+
+
+
+
+
+
+
+// module.exports = router;

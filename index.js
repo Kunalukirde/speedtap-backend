@@ -4,10 +4,12 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
 const UserApiRoutes = require('./userRoutes/userRoutes.js');
+const AdminRoutes = require('./adminRoutes/adminRoutes.js')
 const paymentRoutes = require('./routes/payment.js');
 const { connectDB } = require('./config/dbconfig.js');
 const windowsAppRoutes = require('./winAppRoutes/windowsAppRoutes.js');
 const subscriptionRoutes = require('./routes/subscriptionRoutes.js');
+const adminAuthMiddleware = require('./middleware/adminAuthMiddleware.js');
 
 connectDB();
 const app = express();
@@ -33,6 +35,7 @@ app.get('/health', (req, res) => {
   res.send('server is live');
 })
 app.use('/api', UserApiRoutes);
+app.use('/admin', AdminRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 

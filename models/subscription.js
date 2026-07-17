@@ -21,30 +21,37 @@ const subscriptionSchema = new mongoose.Schema(
 
     paymentMethod: {
         type: String,
-        enum: ["TRIAL", "RAZORPAY"],
+        enum: ["TRIAL", "QR"],
         required: true
     },
 
-    paymentId: String,
-
-    orderId: String,
-
-    razorpaySignature: String,
-
-    startDate: {
-        type: Date,
-        required: true
+    // User entered UPI transaction ID
+    transactionId: {
+        type: String,
+        default: ""
     },
 
-    expiryDate: {
-        type: Date,
-        required: true
+    // Optional screenshot path
+    paymentScreenshot: {
+        type: String,
+        default: ""
     },
+
+    // Waiting for admin approval?
+    paymentStatus: {
+        type: String,
+        enum: ["PENDING", "APPROVED", "REJECTED"],
+        default: "PENDING"
+    },
+
+    startDate: Date,
+
+    expiryDate: Date,
 
     status: {
         type: String,
-        enum: ["ACTIVE", "EXPIRED", "CANCELLED"],
-        default: "ACTIVE"
+        enum: ["PENDING", "ACTIVE", "EXPIRED", "CANCELLED"],
+        default: "PENDING"
     }
 
 },
@@ -52,4 +59,6 @@ const subscriptionSchema = new mongoose.Schema(
     timestamps: true
 });
 
-module.exports = mongoose.model("Subscription", subscriptionSchema);
+module.exports =
+    mongoose.models.Subscription ||
+    mongoose.model("Subscription", subscriptionSchema);

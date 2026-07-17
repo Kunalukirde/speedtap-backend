@@ -13,7 +13,6 @@ const UserSchema = new mongoose.Schema(
         required: true
     },
 subscription: {
-
     plan: {
         type: String,
         enum: ["FREE", "TRIAL", "PROFESSIONAL", "PREMIUM"],
@@ -25,15 +24,19 @@ subscription: {
         default: false
     },
 
-    startDate: Date,
-
-    expiryDate: Date,
+    pendingApproval: {
+        type: Boolean,
+        default: false
+    },
 
     trialUsed: {
         type: Boolean,
         default: false
-    }
+    },
 
+    startDate: Date,
+
+    expiryDate: Date
 }
 },
 { timestamps: true }
