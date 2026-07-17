@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const Subscription = require("../models/Subscription");
+const Subscription = require("../models/subscription");
 
 const verifyWindowsSubscription = async (req, res, next) => {
 
