@@ -17,8 +17,8 @@ router.post('/', async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    if (!portalName || !email || !password || !username) {
-      return res.status(400).json({ message: 'portalName, username, email and password are required' });
+    if (!portalName || !username) {
+      return res.status(400).json({ message: 'portalName and username are required' });
     }
 
     // Ensure user exists (and validates userId type)

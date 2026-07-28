@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-
+const mongoose = require('mongoose');
 const JobPortalSchema = new mongoose.Schema(
   {
     userId: {
@@ -26,10 +25,17 @@ const JobPortalSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
     username: {
       type: String,
       required: true,
       trim: true,
+    },
+
+    // NEW FIELD
+    searchUrls: {
+      type: [String],
+      default: [],
     },
 
     autoSync: {
@@ -74,9 +80,5 @@ const JobPortalSchema = new mongoose.Schema(
   }
 );
 
-JobPortalSchema.index(
-  { userId: 1, portalName: 1 },
-  { unique: true }
-);
-
-module.exports = mongoose.model("JobPortal", JobPortalSchema);
+const JobPortal = mongoose.model('JobPortal', JobPortalSchema);
+module.exports = JobPortal;

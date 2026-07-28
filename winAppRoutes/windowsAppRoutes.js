@@ -7,7 +7,102 @@ const verifyWindowsSubscription = require('../middleware/windowsSubscription');
 const UserQuestionBank = require('../models/UserQuestionBank');
 const NJobListingUrl = require('../models/NaukriJobListing');
 const { decrypt } = require("../utils/crypto");
+const Profile = require("../models/UserProfile");
 
+function getMinExperience(totalExperience = "") {
+    const match = totalExperience.match(/\d+/);
+    return match ? match[0] : "0";
+}
+
+function getEducationLevel(degree = "") {
+    const map = {
+        "10th": 1,
+        "12th": 2,
+        "diploma": 3,
+        "graduate": 5,
+        "bca": 5,
+        "bsc": 5,
+        "be": 5,
+        "btech": 5,
+        "mca": 6,
+        "mtech": 6,
+        "mba": 6
+    };
+
+    return map[degree.toLowerCase()] || 5;
+}
+
+function getGender(gender = "") {
+    return gender.toLowerCase() === "male"
+        ? "gender-m"
+        : "gender-f";
+}
+
+function buildApnaJobListingUrl(profile) {
+
+    if (!profile) return "";
+
+    const role =
+        profile.preferences?.preferredRole?.trim() || "developer";
+
+    const minExperience = getMinExperience(
+        profile.preferences?.totalExperience
+    );
+
+    const gender = getGender(
+        profile.personal?.gender
+    );
+
+    const educationLevel = getEducationLevel(
+        profile.education?.[0]?.degree || ""
+    );
+
+    // Take only the first preferred location
+    let location =
+        profile.preferences?.preferredLocations
+            ?.split(",")[0]
+            ?.trim()
+            ?.toLowerCase() || "remote";
+
+    const locationMap = {
+        pune: {
+            id: "64e4ad3cc35bd44248ca5d52",
+            type: "NBCity",
+            name: "Pune"
+        },
+        bengaluru: {
+            id: "64e4ad3cc35bd44248ca5d51",
+            type: "NBCity",
+            name: "Bengaluru"
+        },
+        bangalore: {
+            id: "64e4ad3cc35bd44248ca5d51",
+            type: "NBCity",
+            name: "Bengaluru"
+        },
+        remote: {
+            id: "1",
+            type: "CustomLocation",
+            name: "Anywhere in India"
+        }
+    };
+
+    const loc = locationMap[location] || locationMap.remote;
+
+    const params = new URLSearchParams({
+        minExperience,
+        search: "true",
+        text: role,
+        location_id: loc.type === "CustomLocation" ? "1" : "0",
+        location_identifier: loc.id,
+        location_type: loc.type,
+        location_name: loc.name,
+        educationLevel: educationLevel.toString(),
+        gender
+    });
+
+    return `https://apna.co/jobs?${params.toString()}`;
+}
 
 router.post('/call-login-api',  async (req, res) => {
     try {
@@ -15,11 +110,14 @@ router.post('/call-login-api',  async (req, res) => {
         if (!email) {
             return res.status(400).json({success: false, message: 'Email is required'});
         }
+        // console.log(email);
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not registered'
             });
         }
+        // console.log(user);
+        
         const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1d'});
 
         // fetch all job portals for this user
@@ -30,8 +128,7 @@ router.post('/call-login-api',  async (req, res) => {
             return obj;
         });
 
-        // fetch job list url
-        // const jobListing = await NJobListingUrl.findOne({userId: user._id});
+
         // Fetch or create default job listing URL
 const jobListing = await NJobListingUrl.findOneAndUpdate(
     { userId: user._id },
@@ -46,11 +143,16 @@ const jobListing = await NJobListingUrl.findOneAndUpdate(
     }
 );
 
-
+        const profile = await Profile.findOne({ userId: user._id });
+        const A_JobListingUrl = buildApnaJobListingUrl(profile);   
+        // console.log(A_JobListingUrl);
+        
         return res.status(200).json({
             success: true,
             message: 'User found',
-            data: { email: user.email, token: token, jobPortals : portals, N_JobListingUrl: jobListing?.N_JobListingUrl || "" }
+            data: { email: user.email, token: token, jobPortals : portals, N_JobListingUrl: jobListing?.N_JobListingUrl || "" ,
+                    A_JobListingUrl
+                  }   
         });
 
     } catch (error) {
