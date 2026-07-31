@@ -79,10 +79,17 @@ app.use('/api/windows', require('./winAppRoutes/windowsAppRoutes.js'));
 
 
 
-// Serve Angular
+// Serve User Angular
 const frontendDistPath = path.join(__dirname, 'speedtap', 'browser');
 app.use(express.static(frontendDistPath));
+
+// Angular fallback: return the correct index.html based on path
 app.use((req, res) => {
+    // If the request starts with /adminpanel, serve the Admin app
+    if (req.path.startsWith('/adminpanel')) {
+        return res.sendFile(path.join(adminPath, 'index.html'));
+    }
+    // Otherwise serve the User (SpeedTap) app
     res.sendFile(path.join(frontendDistPath, 'index.html'));
 });
 
