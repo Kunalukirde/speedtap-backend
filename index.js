@@ -34,7 +34,15 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'))
 app.get('/health', (req, res) => {
   res.send('server is live');
 })
-app.use('/api', UserApiRoutes);
+
+// Admin HTML (must come before Admin API routes to avoid conflicts)
+const adminPath = path.join(__dirname, 'Admin', 'browser');
+app.use('/adminpanel', express.static(adminPath));
+
+app.get('/adminpanel', (req, res) => {
+    res.sendFile(path.join(adminPath, 'index.html'));
+});
+
 app.use('/admin', AdminRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/subscription', subscriptionRoutes);
@@ -54,8 +62,6 @@ app.use('/api/subscription', subscriptionRoutes);
 // WINDOWS APPLICATION CODE
 
 app.use('/api/windows', require('./winAppRoutes/windowsAppRoutes.js'));
-
-
 
 
 

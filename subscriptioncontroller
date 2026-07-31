@@ -1,0 +1,136 @@
+
+// 1. Get Pending Payments
+// Method
+// GET
+// URL
+// http://localhost:5000/admin/subscription/pending
+// Headers
+// Key	Value
+// Authorization	Bearer YOUR_ADMIN_TOKEN
+// Body
+// No Body
+// 2. Get Approved Payments
+// Method
+// GET
+// URL
+// http://localhost:5000/admin/subscription/approved
+// Headers
+// Key	Value
+// Authorization	Bearer YOUR_ADMIN_TOKEN
+// Body
+// No Body
+// 3. Get Rejected Payments
+// Method
+// GET
+// URL
+// http://localhost:5000/admin/subscription/rejected
+// Headers
+// Key	Value
+// Authorization	Bearer YOUR_ADMIN_TOKEN
+// Body
+// No Body
+// 4. Get Payment Details
+// Method
+// GET
+// URL
+// http://localhost:5000/admin/subscription/payment/:paymentId
+
+// Example
+
+// http://localhost:5000/admin/subscription/payment/6a5a1416ad0c766d3a63a57a
+// Headers
+// Key	Value
+// Authorization	Bearer YOUR_ADMIN_TOKEN
+// Body
+// No Body
+// 5. Approve Payment
+// Method
+// POST
+// URL
+// http://localhost:5000/admin/subscription/approve/:paymentId
+
+// Example
+
+// http://localhost:5000/admin/subscription/approve/6a5a1416ad0c766d3a63a57a
+// Headers
+// Key	Value
+// Authorization	Bearer YOUR_ADMIN_TOKEN
+// Body
+// No Body
+
+// Everything is taken from the payment document.
+
+// The API will automatically:
+
+// Activate subscription
+// Calculate expiry
+// Update User
+// Update Subscription
+// 6. Reject Payment
+// Method
+// POST
+// URL
+// http://localhost:5000/admin/subscription/reject/:paymentId
+
+// Example
+
+// http://localhost:5000/admin/subscription/reject/6a5a1416ad0c766d3a63a57a
+// Headers
+// Key	Value
+// Authorization	Bearer YOUR_ADMIN_TOKEN
+// Body
+// No Body
+
+// The API will:
+
+// Reject payment
+// Remove pending approval
+// Reset user to FREE plan
+// 7. Get All Payments
+
+// Useful for the admin dashboard.
+
+// Method
+// GET
+// URL
+// http://localhost:5000/admin/subscription/all-payments
+// Headers
+// Key	Value
+// Authorization	Bearer YOUR_ADMIN_TOKEN
+// Body
+// No Body
+
+// Returns every payment regardless of status.
+
+// 8. Dashboard Statistics
+// Method
+// GET
+// URL
+// http://localhost:5000/admin/subscription/dashboard
+// Headers
+// Key	Value
+// Authorization	Bearer YOUR_ADMIN_TOKEN
+// Body
+// No Body
+
+// Response example:
+
+// {
+//   "success": true,
+//   "data": {
+//     "pending": 5,
+//     "approved": 18,
+//     "rejected": 2,
+//     "revenue": 35964
+//   }
+// }
+// Summary
+// API	Method	Body
+// /pending	GET	None
+// /approved	GET	None
+// /rejected	GET	None
+// /payment/:id	GET	None
+// /approve/:id	POST	None
+// /reject/:id	POST	None
+// /all-payments	GET	None
+// /dashboard	GET	None

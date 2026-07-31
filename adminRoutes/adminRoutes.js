@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const Admin = require("../models/admin");
 const router = express.Router();
 const adminAuthMiddleware = require('../middleware/adminAuthMiddleware');
+const usersController = require('../adminController/usersController');
 const subscriptionController = require('../adminController/subscriptionController');
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -11,12 +12,12 @@ const JWT_ISSUER = process.env.JWT_ISSUER || "speedtap";
 
 
 
-router.post("/login", async (req, res) => {
+router.post("/auth/login", async (req, res) => {
 
     try {
 
         const { email, password } = req.body;
-        console.log(req.body);
+        // console.log(req.body);
 
         if (!email || !password) {
 
@@ -131,6 +132,8 @@ router.post("/login", async (req, res) => {
 
 });
 
+
+router.use('/users', usersController);
 router.use('/subscription', subscriptionController);
 
 
