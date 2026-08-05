@@ -23,17 +23,14 @@ const port = process.env.PORT || 5000;
 app.use(cors({origin: true, credentials: true,}));
 app.use(express.json());
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'))
-);
-
-
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // Mount modular API routes
 app.get('/health', (req, res) => {
   res.send('server is live');
 })
+
 
 // Admin HTML (must come before Admin API routes to avoid conflicts)
 const adminPath = path.join(__dirname, 'Admin', 'browser');
@@ -43,6 +40,7 @@ app.get('/adminpanel', (req, res) => {
     res.sendFile(path.join(adminPath, 'index.html'));
 });
 
+app.use('/api', UserApiRoutes);
 app.use('/admin', AdminRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/subscription', subscriptionRoutes);
