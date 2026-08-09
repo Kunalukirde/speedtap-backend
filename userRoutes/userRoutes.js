@@ -502,7 +502,8 @@ await Subscription.create({
     userId: user._id, 
     planName: "TRIAL", 
     amount: 0, 
-    paymentMethod: "TRIAL", 
+    paymentMethod: "TRIAL",
+    paymentStatus: "APPROVED",
     startDate: now, 
     expiryDate: expiry, 
     status: "ACTIVE"

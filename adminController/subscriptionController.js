@@ -86,11 +86,23 @@ router.post("/approve/:id", AdminauthMiddleware, async (req, res) => {
 
         }
 
-        if (payment.paymentStatus === "APPROVED") {
+if (payment.paymentStatus === "APPROVED") {
 
             return res.status(400).json({
                 success: false,
                 message: "Already approved"
+            });
+
+        }
+
+        // Do not allow approving a free-trial record through the admin panel.
+        // Trial plans are auto-activated on registration/start-trial and should
+        // never be approved here, otherwise the user gets reset to the free-trial plan.
+        if (payment.planName === "TRIAL") {
+
+            return res.status(400).json({
+                success: false,
+                message: "Trial plans are auto-activated and cannot be approved."
             });
 
         }

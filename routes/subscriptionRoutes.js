@@ -48,11 +48,13 @@ router.post("/start-trial", authMiddleware, async (req, res) => {
 
       userId: user._id,
 
-      planName: "TRIAL",
+planName: "TRIAL",
 
       amount: 0,
 
       paymentMethod: "TRIAL",
+
+      paymentStatus: "APPROVED",
 
       startDate: now,
 
@@ -105,10 +107,7 @@ router.get("/current", authMiddleware, async (req, res) => {
 
 
 
-router.post(
-  "/request-payment",
-  authMiddleware,
-  async (req, res) => {
+router.post("/request-payment", authMiddleware, async (req, res) => {
 
     try {
 

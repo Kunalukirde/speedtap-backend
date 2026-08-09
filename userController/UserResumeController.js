@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
 const Resume = require("../models/Resume");
+const Profile = require("../models/UserProfile");
 
 // ================= Upload Config =================
 
@@ -73,6 +74,24 @@ router.post("/", upload.single("resume"), async (req, res) => {
             size: req.file.size,
         });
 
+        // Keep Profile.resume in sync with the Resume collection
+        await Profile.updateOne(
+            { userId },
+            {
+                $set: {
+                    resume: {
+                        resumeId: resume._id,
+                        originalName: resume.originalName,
+                        filename: resume.filename,
+                        fileUrl: resume.fileUrl,
+                        size: resume.size,
+                        createdAt: resume.createdAt,
+                    },
+                },
+            },
+            { upsert: true }
+        );
+
         return res.status(201).json({
             success: true,
             message: "Resume uploaded successfully.",
@@ -98,6 +117,18 @@ router.get("/", async (req, res) => {
         }
 
         const resume = await Resume.findOne({ userId }).lean();
+
+        // Fallback: return Profile.resume if the Resume collection is empty
+        // (handles legacy data that was only stored inside the profile).
+        if (!resume) {
+            const profile = await Profile.findOne({ userId }).lean();
+
+            if (profile?.resume) {
+                return res.json({
+                    data: profile.resume,
+                });
+            }
+        }
 
         return res.json({
             data: resume,
@@ -177,6 +208,12 @@ router.delete("/", async (req, res) => {
         }
 
         await Resume.deleteOne({ _id: resume._id });
+
+        // Also clear the Profile.resume field to keep them in sync
+        await Profile.updateOne(
+            { userId },
+            { $unset: { resume: "" } }
+        );
 
         return res.json({
             success: true,

@@ -28,7 +28,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Mount modular API routes
 app.get('/health', (req, res) => {
-  res.send('server is live');
+  res.status(200).send('server is live');
 })
 
 
