@@ -509,14 +509,6 @@ await Subscription.create({
     status: "ACTIVE"
 });
 
-
-    // Create user
-    await User.create({
-        username: uname.trim(),
-        email,
-        passwordHash
-    });
-
     // Delete OTP after successful registration
     await Otp.deleteOne({
         email,
