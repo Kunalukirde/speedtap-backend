@@ -51,6 +51,7 @@ const transporter = nodemailer.createTransport({
 // RESEND EMAIL SERVICE FUNCTION
 
 const sendOtpEmail = async (email, otp) => {
+    console.log("RESEND EMAIL SERVICE FUNCTION");
     try {
         const apiKey = process.env.RESEND_API_KEY;
         const fromEmail = process.env.EMAIL_FROM;
@@ -103,7 +104,7 @@ const sendOtpEmail = async (email, otp) => {
             throw new Error(result.message || "Email sending failed");
         }
 
-        // console.log("EMAIL SENT SUCCESSFULLY:", result.id);
+        console.log("EMAIL SENT SUCCESSFULLY:", result.id);
 
         return result;
 
