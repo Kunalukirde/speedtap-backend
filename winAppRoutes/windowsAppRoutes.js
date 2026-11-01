@@ -270,7 +270,7 @@ router.post('/call-auto-apply-joblist',verifyWindowsSubscription, async (req, re
 
 router.post('/call-auto-apply-answers',verifyWindowsSubscription, async (req, res) => {
     try {
-        console.log(req.body);
+        // console.log(req.body);
 
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {

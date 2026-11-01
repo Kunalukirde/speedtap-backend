@@ -12,6 +12,12 @@ const JWT_ISSUER = process.env.JWT_ISSUER || "speedtap";
 
 
 
+
+
+// email : "admin@speedtap.online",
+// password : "admin123"
+
+
 router.post("/auth/login", async (req, res) => {
 
     try {

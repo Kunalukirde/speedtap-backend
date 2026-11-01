@@ -10,7 +10,7 @@ router.post('/', async (req, res) => {
 
     const profileData = req.body.data;
 
-    console.log(profileData);
+    // console.log(profileData);
 
     const existingProfile = await Profile.findOne({ userId });
 

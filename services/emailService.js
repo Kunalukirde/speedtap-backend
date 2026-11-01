@@ -8,37 +8,113 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// GMAIL OPT SEND EMAIL FUNCTION
+
+// const sendOtpEmail = async (email, otp) => {
+
+//     await transporter.sendMail({
+//         from: `"SpeedTap Team" <${process.env.EMAIL_USER}>`,
+//         to: email,
+//         subject: "SpeedTap Email Verification",
+
+//         html: `
+//             <div style="font-family:Arial;padding:20px">
+
+//                 <h2>Verify your Email</h2>
+
+//                 <p>Your verification code is</p>
+
+//                 <h1 style="letter-spacing:8px">
+//                     ${otp}
+//                 </h1>
+
+//                 <p>
+//                     This OTP will expire in <b>5 minutes</b>.
+//                 </p>
+
+//                 <p>
+//                     If you didn't request this, ignore this email.
+//                 </p>
+
+//             </div>
+//         `
+//     });
+
+// };
+
+
+
+
+
+
+
+// RESEND EMAIL SERVICE FUNCTION
+
 const sendOtpEmail = async (email, otp) => {
+    try {
+        const apiKey = process.env.RESEND_API_KEY;
+        const fromEmail = process.env.EMAIL_FROM;
 
-    await transporter.sendMail({
-        from: `"SpeedTap Team" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "SpeedTap Email Verification",
+        if (!apiKey || !fromEmail) {
+            throw new Error("Resend environment variables missing");
+        }
 
-        html: `
-            <div style="font-family:Arial;padding:20px">
+        const response = await fetch(
+            "https://api.resend.com/emails",
+            {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${apiKey}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    from: fromEmail,
+                    to: [email],
+                    subject: "SpeedTap Email Verification",
+                    html: `
+                        <div style="font-family:Arial;padding:20px">
+                            <h2>Verify your Email</h2>
 
-                <h2>Verify your Email</h2>
+                            <p>Your verification code is</p>
 
-                <p>Your verification code is</p>
+                            <h1 style="letter-spacing:8px">
+                                ${otp}
+                            </h1>
 
-                <h1 style="letter-spacing:8px">
-                    ${otp}
-                </h1>
+                            <p>
+                                This OTP will expire in
+                                <b>5 minutes</b>.
+                            </p>
 
-                <p>
-                    This OTP will expire in <b>5 minutes</b>.
-                </p>
+                            <p>
+                                If you didn't request this,
+                                ignore this email.
+                            </p>
+                        </div>
+                    `
+                })
+            }
+        );
 
-                <p>
-                    If you didn't request this, ignore this email.
-                </p>
+        const result = await response.json();
 
-            </div>
-        `
-    });
+        if (!response.ok) {
+            console.error("RESEND ERROR:", result);
+            throw new Error(result.message || "Email sending failed");
+        }
 
+        // console.log("EMAIL SENT SUCCESSFULLY:", result.id);
+
+        return result;
+
+    } catch (error) {
+        console.error("EMAIL ERROR:", error.message);
+        throw error;
+    }
 };
+
+
+
 
 module.exports = {
     sendOtpEmail

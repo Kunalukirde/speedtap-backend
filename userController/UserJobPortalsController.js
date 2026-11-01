@@ -107,7 +107,7 @@ router.post('/:portalId/connect-disconnect', async (req, res) => {
   try {
     const userId = req.user?.userId;
     const { portalId } = req.params;
-    console.log('Connect/Disconnect request for portalId:', portalId, 'by userId:', userId);
+    // console.log('Connect/Disconnect request for portalId:', portalId, 'by userId:', userId);
 
     if (!userId) {
       return res.status(401).json({ message: 'Unauthorized' });
